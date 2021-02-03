@@ -18,17 +18,31 @@
      <td>{{.Name}}</td>
      <td>{{.Comment}}</td>
      <td>
-         <button type="submit" onclick="getTable({{.Name}})">查看</button>
+         <button type="submit" onclick="getTable({{.Name}})">查看表结构</button>
+         <button type="submit" onclick="getTableRecords({{.Name}})">查看数据</button>
      </td>
    </tr>
  {{end}}
  </table>
 
  <script>
+    var xmlhttp = new XMLHttpRequest();
+    var domain = "http://127.0.0.1:8081";
+
     function getTable(tableName){
-        xmlhttp.open("GET","/getTable?tableName=" + tableName + "&t=" + Math.random());
+        url = domain+"/getTable?tableName=" + tableName + "&t=" + Math.random()
+        xmlhttp.open("GET",url,true);
         xmlhttp.send();
+        location.replace(url);
     }
+
+    function getTableRecords(tableName){
+        url = domain+"/getTableRecords?tableName=" + tableName + "&t=" + Math.random()
+        xmlhttp.open("GET",url,true);
+        xmlhttp.send();
+        location.replace(url);
+    }
+
  </script>
 
 </body>

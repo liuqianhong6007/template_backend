@@ -2,15 +2,16 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>表格</title>
+<title>{{.Name}}</title>
 </head>
 <body>
 
  <table border="1">
    <tr>
      <th>字段名称</th>
+     <th>字段类型</th>
+     <th>数据类型</th>
      <th>描述</th>
-     <th>操作</th>
    </tr>
 
  {{range .Columns}}

@@ -1,10 +1,11 @@
 package route
 
 import (
-	"github.com/liuqianhong6007/template_backend/config"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/liuqianhong6007/template_backend/config"
 )
 
 func init() {
@@ -17,6 +18,11 @@ func init() {
 		Method:  http.MethodGet,
 		Path:    "/getTable",
 		Handler: getTable,
+	})
+	AddRoute(Route{
+		Method:  http.MethodGet,
+		Path:    "/getTableRecords",
+		Handler: getTableRecords,
 	})
 }
 
@@ -57,7 +63,7 @@ func index(c *gin.Context) {
 }
 
 func getTable(c *gin.Context) {
-	tableName := c.Param("tableName")
+	tableName := c.Query("tableName")
 	rows, err := gDb.QueryContext(c, GetTableSql, config.DbCfg().LibName, tableName)
 	checkErr(c, err)
 	defer rows.Close()
@@ -75,4 +81,64 @@ func getTable(c *gin.Context) {
 	}
 
 	c.HTML(200, "getTable.tpl", table)
+}
+
+type Record []ColumnContent
+
+type ColumnContent struct {
+	ColumnName string
+	DataType   string
+	Value      string
+}
+
+func getTableRecords(c *gin.Context) {
+	tableName := c.Query("tableName")
+	rows, err := gDb.QueryContext(c, GetTableSql, config.DbCfg().LibName, tableName)
+	checkErr(c, err)
+	defer rows.Close()
+
+	var columns []Column
+	for rows.Next() {
+		var column Column
+		err = rows.Scan(&column.ColumnName, &column.DataType, &column.ColumnType, &column.ColumnComment)
+		checkErr(c, err)
+		columns = append(columns, column)
+	}
+
+	var records []Record
+	if len(columns) == 0 {
+		c.HTML(200, "getTableRecords.tpl", records)
+		return
+	}
+
+	sqlStr := `select `
+	realColumnVals := make([][]byte, len(columns))
+	columnVals := make([]interface{}, len(columns))
+	for i, column := range columns {
+		sqlStr = sqlStr + column.ColumnName + `,`
+		columnVals[i] = &realColumnVals[i]
+	}
+	sqlStr = sqlStr[:len(sqlStr)-1]
+	sqlStr = sqlStr + ` from ` + tableName
+
+	rowRecords, err := gDb.QueryContext(c, sqlStr)
+	checkErr(c, err)
+	defer rowRecords.Close()
+
+	for rowRecords.Next() {
+
+		err = rowRecords.Scan(columnVals...)
+		checkErr(c, err)
+		var record Record
+		for i, realColumnVal := range realColumnVals {
+			record = append(record, ColumnContent{
+				ColumnName: columns[i].ColumnName,
+				DataType:   columns[i].DataType,
+				Value:      string(realColumnVal),
+			})
+		}
+		records = append(records, record)
+	}
+
+	c.HTML(200, "getTableRecords.tpl", records)
 }
