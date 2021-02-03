@@ -19,13 +19,13 @@ type Db struct {
 }
 
 var (
-	cfgPath string
 	gConfig Config
 )
 
 func init() {
-	flag.Parse()
+	var cfgPath string
 	flag.StringVar(&cfgPath, "config", ".", "config path")
+	flag.Parse()
 
 	buff, err := ioutil.ReadFile(cfgPath)
 	if err != nil {
