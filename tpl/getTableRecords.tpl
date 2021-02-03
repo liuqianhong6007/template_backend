@@ -12,9 +12,17 @@
          {{range .}}
              <td>{{.Value}}</td>
          {{end}}
-         <td>你好</td>
+         <td>
+            <button type="submit">修改</button>
+            <button type="submit">删除</button>
+         </td>
     </tr>
  {{end}}
+ <tr>
+    <td>
+        <button type="submit">新增</button>
+    </td>
+ </tr>
  </table>
 
  <script>
