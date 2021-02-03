@@ -1,0 +1,10 @@
+server:
+  host: 0.0.0.0
+  port: 8081
+
+db:
+  host: 127.0.0.1
+  port: 13306
+  user: root
+  pass: example
+  lib_name: game_service_dev
