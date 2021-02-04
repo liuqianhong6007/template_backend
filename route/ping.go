@@ -1,16 +1,17 @@
 package route
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func init() {
-	AddRoute(Route{
-		Method:  http.MethodGet,
-		Path:    "/ping",
-		Handler: ping,
+	AddRoute(Routes{
+		{
+			Method:  http.MethodGet,
+			Path:    "/ping",
+			Handler: ping,
+		},
 	})
 }
 

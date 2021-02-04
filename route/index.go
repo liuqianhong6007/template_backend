@@ -9,20 +9,22 @@ import (
 )
 
 func init() {
-	AddRoute(Route{
-		Method:  http.MethodGet,
-		Path:    "/index",
-		Handler: index,
-	})
-	AddRoute(Route{
-		Method:  http.MethodGet,
-		Path:    "/getTable",
-		Handler: getTable,
-	})
-	AddRoute(Route{
-		Method:  http.MethodGet,
-		Path:    "/getTableRecords",
-		Handler: getTableRecords,
+	AddRoute(Routes{
+		{
+			Method:  http.MethodGet,
+			Path:    "/index",
+			Handler: index,
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/getTable",
+			Handler: getTable,
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/getTableRecords",
+			Handler: getTableRecords,
+		},
 	})
 }
 

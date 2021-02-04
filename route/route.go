@@ -11,23 +11,27 @@ import (
 	"github.com/liuqianhong6007/template_backend/db"
 )
 
+type Routes []Route
+
 type Route struct {
 	Method  string
 	Path    string
 	Handler gin.HandlerFunc
 }
 
-var routes = make(map[string]Route)
+var routeMap = make(map[string]Route)
 
-func AddRoute(route Route) {
-	if _, ok := routes[route.Path]; ok {
-		panic("duplicate register router: " + route.Path)
+func AddRoute(routes Routes) {
+	for _, route := range routes {
+		if _, ok := routeMap[route.Path]; ok {
+			panic("duplicate register router: " + route.Path)
+		}
+		routeMap[route.Path] = route
 	}
-	routes[route.Path] = route
 }
 
 func RegisterRoute(engine *gin.Engine) {
-	for _, route := range routes {
+	for _, route := range routeMap {
 		engine.Handle(route.Method, route.Path, route.Handler)
 	}
 	// 404
