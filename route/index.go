@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"strconv"
 	"strings"
 
 	"github.com/liuqianhong6007/template_backend/config"
@@ -36,7 +37,7 @@ func Index(c *gin.Context) {
 		tables = append(tables, table)
 	}
 
-	c.HTML(200, "Index.tpl", tables)
+	c.HTML(200, "index.tpl", tables)
 }
 
 func GetTable(c *gin.Context) {
@@ -48,7 +49,7 @@ func GetTable(c *gin.Context) {
 	var columns []Column
 	for rows.Next() {
 		var column Column
-		err = rows.Scan(&column.ColumnName, &column.DataType, &column.ColumnType, &column.ColumnComment)
+		err = rows.Scan(&column.ColumnName, &column.DataType, &column.ColumnType, &column.ColumnComment, &column.ColumnKey)
 		checkValue(c, err)
 		columns = append(columns, column)
 	}
@@ -57,12 +58,13 @@ func GetTable(c *gin.Context) {
 		Columns: columns,
 	}
 
-	c.HTML(200, "GetTable.tpl", table)
+	c.HTML(200, "getTable.tpl", table)
 }
 
 type TableRecord struct {
-	Columns []string
-	Records []Record
+	TableName string
+	Columns   []string
+	Records   []Record
 }
 
 type Record struct {
@@ -89,7 +91,7 @@ func GetTableRecords(c *gin.Context) {
 
 	var tableRecord TableRecord
 	if len(columns) == 0 {
-		c.HTML(200, "GetTableRecords.tpl", tableRecord)
+		c.HTML(200, "getTableRecords.tpl", tableRecord)
 		return
 	}
 
@@ -118,20 +120,25 @@ func GetTableRecords(c *gin.Context) {
 		}
 		tableRecord.Records = append(tableRecord.Records, record)
 	}
+	tableRecord.TableName = tableName
 
-	c.HTML(200, "GetTableRecords.tpl", tableRecord)
+	c.HTML(200, "getTableRecords.tpl", tableRecord)
 }
 
 func UpdateTableRecord(c *gin.Context) {
 	tableName := c.PostForm("tableName")
+	checkValue(c, tableName != "", "param[tableName] is null")
+
 	columns := getTableMeta(c, tableName)
+	checkValue(c, len(columns) > 0, fmt.Sprintf("table[%s] not exit", tableName))
+
 	columnMap := make(map[string]string)
 	var pk string
 	for _, column := range columns {
 		if column.ColumnKey == "PRI" { // primary key
 			pk = column.ColumnName
 		}
-		columnMap[column.ColumnName] = column.ColumnName
+		columnMap[column.ColumnName] = column.DataType
 	}
 	checkValue(c, pk != "", fmt.Sprintf("table[%s] has not pk yet", tableName))
 
@@ -139,6 +146,7 @@ func UpdateTableRecord(c *gin.Context) {
 	checkValue(c, data != "", "data param is null")
 
 	paramMap := make(map[string]string)
+	var paramCnt int
 	for _, kv := range strings.Split(data, ";") {
 		arr := strings.Split(kv, "=")
 		if len(arr) != 2 {
@@ -148,9 +156,41 @@ func UpdateTableRecord(c *gin.Context) {
 			continue
 		}
 		paramMap[arr[0]] = arr[1]
+		paramCnt++
 	}
 	if _, ok := paramMap[pk]; !ok {
 		checkValue(c, errors.New("param must include pk"))
 	}
+	if paramCnt < 2 {
+		checkValue(c, errors.New("param must include at least one column to update"))
+	}
+	sqlStr := "update " + tableName + " set "
+	var args []interface{}
+	for k, v := range paramMap {
+		sqlStr = sqlStr + fmt.Sprintf("%s = ?,", k)
 
+		switch columnMap[k] {
+		case "tinyint", "smallint", "mediumint", "int", "integer", "bigint", "decimal", "numeric":
+			val, err := strconv.Atoi(v)
+			checkValue(c, err, "column data type mismatch")
+			args = append(args, val)
+		case "float", "double":
+			val, err := strconv.ParseFloat(v, 64)
+			checkValue(c, err, "column data type mismatch")
+			args = append(args, val)
+		case "char", "varchar", "tinytext", "mediumtext", "longtext", "text", "tinyblob", "mediumblob", "longblob", "blob":
+			args = append(args, v)
+		default:
+			checkValue(c, errors.New("unknown data type"))
+		}
+	}
+
+	sqlStr = sqlStr[:len(sqlStr)-1]
+	sqlStr = sqlStr + fmt.Sprintf(" where %s = ?", pk)
+	args = append(args, paramMap[pk])
+
+	_, err := gDb.ExecContext(c, sqlStr, args...)
+	checkValue(c, err)
+
+	GetTableRecords(c)
 }

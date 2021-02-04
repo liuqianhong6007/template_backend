@@ -20,8 +20,8 @@
              <td class="tableName">{{.Name}}</td>
              <td>{{.Comment}}</td>
              <td>
-                 <button type="submit" class="getTableBtn">查看表结构</button>
-                 <button type="submit" class="getTableRecordBtn">查看数据</button>
+                 <button type="submit" id="getTableBtn">查看表结构</button>
+                 <button type="submit" id="getTableRecordBtn">查看数据</button>
              </td>
            </tr>
          {{end}}
@@ -32,12 +32,11 @@
  </div>
 
  <script>
-    var xmlhttp = new XMLHttpRequest();
     var domain = "http://127.0.0.1:8081";
 
     $(document).ready(function(){
             // 查看表结构
-            $(".getTableBtn").click(function(){
+            $("#getTableBtn").click(function(){
                 tableName = $(this).parent().parent().find(".tableName").text();
                 url = domain+"/getTable?tableName=" + tableName;
                 $.get(url,function(data,status){
@@ -46,7 +45,7 @@
             });
 
             // 查看表数据
-            $(".getTableRecordBtn").click(function(){
+            $("#getTableRecordBtn").click(function(){
                 tableName = $(this).parent().parent().find(".tableName").text();
                 url = domain+"/getTableRecords?tableName=" + tableName
                 $.get(url,function(data,status){
