@@ -4,12 +4,38 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/liuqianhong6007/template_backend/config"
 	"github.com/liuqianhong6007/template_backend/db"
 )
+
+func init() {
+	AddRoute(Routes{
+		{
+			Method:  http.MethodGet,
+			Path:    "/index",
+			Handler: Index,
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/getTable",
+			Handler: GetTable,
+		},
+		{
+			Method:  http.MethodGet,
+			Path:    "/getTableRecords",
+			Handler: GetTableRecords,
+		},
+		{
+			Method:  http.MethodPost,
+			Path:    "/updateTableRecord",
+			Handler: UpdateTableRecord,
+		},
+	})
+}
 
 type Routes []Route
 
@@ -58,7 +84,7 @@ func InitDatabase() {
 
 var (
 	GetTablesStmt *sql.Stmt
-	GetTableSql   = `select COLUMN_NAME,DATA_TYPE,COLUMN_TYPE,COLUMN_COMMENT from information_schema.COLUMNS where TABLE_SCHEMA = ? AND TABLE_NAME = ?`
+	GetTableSql   = `select COLUMN_NAME,DATA_TYPE,COLUMN_TYPE,COLUMN_COMMENT,COLUMN_KEY from information_schema.COLUMNS where TABLE_SCHEMA = ? AND TABLE_NAME = ?`
 )
 
 func prepareStmt(db *sql.DB) {
@@ -71,4 +97,19 @@ func prepareStmt(db *sql.DB) {
 
 func BuildSql(format string, args ...interface{}) string {
 	return fmt.Sprintf(format, args...)
+}
+
+func checkValue(c *gin.Context, checkValue interface{}, errMsg ...string) {
+	switch val := checkValue.(type) {
+	case error:
+		if val != nil {
+			c.HTML(http.StatusInternalServerError, "500.tpl", nil)
+			panic(strings.Join(errMsg, "\n") + "\n" + val.Error())
+		}
+	case bool:
+		if !val {
+			c.HTML(http.StatusInternalServerError, "500.tpl", nil)
+			panic(strings.Join(errMsg, "\n"))
+		}
+	}
 }
