@@ -1,1 +1,21 @@
-Server Internal Error
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>404</title>
+</head>
+<body>
+<pre>
+        * * * * * * * * * * *           * * * * * * * * *       * * * * * * * * *
+        *                               *               *       *               *
+        *                               *               *       *               *
+        *                               *               *       *               *
+        * * * * * * * * * * *           *               *       *               *
+                            *           *               *       *               *
+                            *           *               *       *               *
+                            *           *               *       *               *
+                            *           *               *       *               *
+        * * * * * * * * * * *           * * * * * * * * *       * * * * * * * * *
+</pre>
+</body>
+</html>

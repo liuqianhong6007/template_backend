@@ -3,6 +3,7 @@ package route
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 
@@ -29,6 +30,10 @@ func RegisterRoute(engine *gin.Engine) {
 	for _, route := range routes {
 		engine.Handle(route.Method, route.Path, route.Handler)
 	}
+	// 404
+	engine.NoRoute(func(c *gin.Context) {
+		c.HTML(http.StatusNotFound, "404.tpl", nil)
+	})
 }
 
 var gDb *sql.DB
