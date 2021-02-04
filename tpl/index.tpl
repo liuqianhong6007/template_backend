@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>表格</title>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
 </head>
 <body>
  <div>
@@ -15,34 +16,51 @@
 
      {{range .}}
        <tr>
-         <td>{{.Name}}</td>
+         <td class="tableName">{{.Name}}</td>
          <td>{{.Comment}}</td>
          <td>
-             <button type="submit" onclick="getTable({{.Name}})">查看表结构</button>
-             <button type="submit" onclick="getTableRecords({{.Name}})">查看数据</button>
+             <button type="submit" class="getTableBtn">查看表结构</button>
+             <button type="submit" class="getTableRecordBtn">查看数据</button>
          </td>
        </tr>
      {{end}}
      </table>
  </div>
+ </br>
+ <div id="data-show">
+
+ </div>
+
  <script>
     var xmlhttp = new XMLHttpRequest();
     var domain = "http://127.0.0.1:8081";
 
-    function getTable(tableName){
-        url = domain+"/getTable?tableName=" + tableName + "&t=" + Math.random()
-        xmlhttp.open("GET",url,true);
-        xmlhttp.send();
-        location.replace(url);
-    }
+    $(document).ready(function(){
+            // 查看表结构
+            $(".getTableBtn").click(function(){
+                tableName = $(this).parent().parent().find(".tableName").text();
+                url = domain+"/getTable?tableName=" + tableName;
+                $.get(url,function(data,status){
+                    $("#data-show").html(data);
+                });
+            });
 
-    function getTableRecords(tableName){
-        url = domain+"/getTableRecords?tableName=" + tableName + "&t=" + Math.random()
-        xmlhttp.open("GET",url,true);
-        xmlhttp.send();
-        location.replace(url);
-    }
+            // 查看表数据
+            $(".getTableRecordBtn").click(function(){
+                tableName = $(this).parent().parent().find(".tableName").text();
+                url = domain+"/getTableRecords?tableName=" + tableName
+                $.get(url,function(data,status){
+                    $("#data-show").html(data);
+                });
+            });
 
+            // 表格样式
+            $("tr").hover(function(){
+                $(this).css("background-color","yellow");
+            },function(){
+                 $(this).css("background-color","white");
+            });
+     });
  </script>
 
 </body>

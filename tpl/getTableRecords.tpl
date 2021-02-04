@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8">
 <title>表格数据</title>
-<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
 </head>
 <body>
 
@@ -27,13 +26,7 @@
  </table>
 
  <script>
-    $(document).ready(function(){
-        $("tr").hover(function(){
-            $(this).css("background-color","yellow");
-        },function(){
-            $(this).css("background-color","white");
-        });
-    });
+
  </script>
 
 </body>
