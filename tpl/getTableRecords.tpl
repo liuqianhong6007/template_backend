@@ -7,10 +7,16 @@
 <body>
 
  <table border="1">
- {{range .}}
     <tr>
-         {{range .}}
-             <td>{{.Value}}</td>
+    {{range .Columns}}
+        <th>{{.}}</th>
+    {{end}}
+    <th>操作</th>
+    </tr>
+ {{range .Records}}
+    <tr>
+         {{range .Values}}
+             <td>{{.}}</td>
          {{end}}
          <td>
             <button type="submit">修改</button>

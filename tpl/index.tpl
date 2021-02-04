@@ -6,29 +6,29 @@
 <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
 </head>
 <body>
- <div>
-    <table border="1">
-       <tr>
-         <th>表名称</th>
-         <th>描述</th>
-         <th>操作</th>
-       </tr>
+<div>
+    <div id="left-frame">
+        <table border="1">
+           <tr>
+             <th>表名称</th>
+             <th>描述</th>
+             <th>操作</th>
+           </tr>
 
-     {{range .}}
-       <tr>
-         <td class="tableName">{{.Name}}</td>
-         <td>{{.Comment}}</td>
-         <td>
-             <button type="submit" class="getTableBtn">查看表结构</button>
-             <button type="submit" class="getTableRecordBtn">查看数据</button>
-         </td>
-       </tr>
-     {{end}}
-     </table>
- </div>
- </br>
- <div id="data-show">
+         {{range .}}
+           <tr>
+             <td class="tableName">{{.Name}}</td>
+             <td>{{.Comment}}</td>
+             <td>
+                 <button type="submit" class="getTableBtn">查看表结构</button>
+                 <button type="submit" class="getTableRecordBtn">查看数据</button>
+             </td>
+           </tr>
+         {{end}}
+         </table>
+     </div>
 
+     <div id="right-frame"></div>
  </div>
 
  <script>
@@ -41,7 +41,7 @@
                 tableName = $(this).parent().parent().find(".tableName").text();
                 url = domain+"/getTable?tableName=" + tableName;
                 $.get(url,function(data,status){
-                    $("#data-show").html(data);
+                    $("#right-frame").html(data);
                 });
             });
 
@@ -50,7 +50,7 @@
                 tableName = $(this).parent().parent().find(".tableName").text();
                 url = domain+"/getTableRecords?tableName=" + tableName
                 $.get(url,function(data,status){
-                    $("#data-show").html(data);
+                    $("#right-frame").html(data);
                 });
             });
 
@@ -62,6 +62,11 @@
             });
      });
  </script>
+ <style>
+    #right-frame {
+         margin-top: 20px;
+    }
+ </style>
 
 </body>
 </html>

@@ -83,12 +83,13 @@ func getTable(c *gin.Context) {
 	c.HTML(200, "getTable.tpl", table)
 }
 
-type Record []ColumnContent
+type TableRecord struct {
+	Columns []string
+	Records []Record
+}
 
-type ColumnContent struct {
-	ColumnName string
-	DataType   string
-	Value      string
+type Record struct {
+	Values []string
 }
 
 func getTableRecords(c *gin.Context) {
@@ -105,9 +106,9 @@ func getTableRecords(c *gin.Context) {
 		columns = append(columns, column)
 	}
 
-	var records []Record
+	var tableRecord TableRecord
 	if len(columns) == 0 {
-		c.HTML(200, "getTableRecords.tpl", records)
+		c.HTML(200, "getTableRecords.tpl", tableRecord)
 		return
 	}
 
@@ -117,6 +118,7 @@ func getTableRecords(c *gin.Context) {
 	for i, column := range columns {
 		sqlStr = sqlStr + column.ColumnName + `,`
 		columnVals[i] = &realColumnVals[i]
+		tableRecord.Columns = append(tableRecord.Columns, column.ColumnName)
 	}
 	sqlStr = sqlStr[:len(sqlStr)-1]
 	sqlStr = sqlStr + ` from ` + tableName
@@ -130,15 +132,11 @@ func getTableRecords(c *gin.Context) {
 		err = rowRecords.Scan(columnVals...)
 		checkErr(c, err)
 		var record Record
-		for i, realColumnVal := range realColumnVals {
-			record = append(record, ColumnContent{
-				ColumnName: columns[i].ColumnName,
-				DataType:   columns[i].DataType,
-				Value:      string(realColumnVal),
-			})
+		for _, realColumnVal := range realColumnVals {
+			record.Values = append(record.Values, string(realColumnVal))
 		}
-		records = append(records, record)
+		tableRecord.Records = append(tableRecord.Records, record)
 	}
 
-	c.HTML(200, "getTableRecords.tpl", records)
+	c.HTML(200, "getTableRecords.tpl", tableRecord)
 }
