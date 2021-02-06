@@ -1,0 +1,34 @@
+body{
+    margin: 0;
+}
+header{
+    background-color: black;
+    color: white;
+    line-height: 50px;
+    text-align: center;
+    font-size: 30px;
+}
+nav{
+    background-color: black;
+    color: red;
+    height: 20px;
+    text-align: left;
+    padding: 20px 0;
+}
+aside{
+    color: black;
+    height: 750px;
+    width: 20%;
+    float: left;
+}
+main{
+    background-color: '#eeeeee';
+    height: 750px;
+}
+footer{
+    background-color: black;
+    color: white;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+}
