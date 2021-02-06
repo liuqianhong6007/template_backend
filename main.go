@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/liuqianhong6007/template_backend/config"
@@ -12,7 +13,6 @@ func main() {
 	route.InitDatabase()
 
 	r := gin.Default()
-	r.LoadHTMLGlob("tpl/*")
 	route.RegisterRoute(r)
 
 	serverAddr := fmt.Sprintf("%s:%d", config.ServerCfg().Host, config.ServerCfg().Port)

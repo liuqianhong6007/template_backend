@@ -21,6 +21,11 @@ func init() {
 		},
 		{
 			Method:  http.MethodGet,
+			Path:    "/getTables",
+			Handler: GetTables,
+		},
+		{
+			Method:  http.MethodGet,
 			Path:    "/getTable",
 			Handler: GetTable,
 		},
@@ -57,13 +62,19 @@ func AddRoute(routes Routes) {
 }
 
 func RegisterRoute(engine *gin.Engine) {
+	// load template file
+	engine.LoadHTMLGlob("tpl/**/*")
+
 	for _, route := range routeMap {
 		engine.Handle(route.Method, route.Path, route.Handler)
 	}
-	// 404
+	// 404 page
 	engine.NoRoute(func(c *gin.Context) {
 		c.HTML(http.StatusNotFound, "404.tpl", nil)
 	})
+
+	// static file server
+	engine.StaticFS("/static", http.Dir("./static"))
 }
 
 var gDb *sql.DB
