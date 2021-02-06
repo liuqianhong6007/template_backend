@@ -15,3 +15,14 @@
     </tr>
     {{end}}
 </table>
+
+<script>
+$(document).ready(function(){
+    // 表格样式
+    $("tr").hover(function(){
+        $(this).css("background-color","yellow");
+    },function(){
+         $(this).css("background-color","white");
+    });
+ });
+</script>

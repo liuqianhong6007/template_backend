@@ -35,30 +35,30 @@
     var domain = "http://127.0.0.1:8081";
 
     $(document).ready(function(){
-            // 查看表结构
-            $("#getTableBtn").click(function(){
-                tableName = $(this).parent().parent().find(".tableName").text();
-                url = domain+"/getTable?tableName=" + tableName;
-                $.get(url,function(data,status){
-                    $("#right-frame").html(data);
-                });
+        // 查看表结构
+        $("#getTableBtn").click(function(){
+            tableName = $(this).parent().parent().find(".tableName").text();
+            url = domain+"/getTable?tableName=" + tableName;
+            $.get(url,function(data,status){
+                $("#right-frame").html(data);
             });
+        });
 
-            // 查看表数据
-            $("#getTableRecordBtn").click(function(){
-                tableName = $(this).parent().parent().find(".tableName").text();
-                url = domain+"/getTableRecords?tableName=" + tableName
-                $.get(url,function(data,status){
-                    $("#right-frame").html(data);
-                });
+        // 查看表数据
+        $("#getTableRecordBtn").click(function(){
+            tableName = $(this).parent().parent().find(".tableName").text();
+            url = domain+"/getTableRecords?tableName=" + tableName
+            $.get(url,function(data,status){
+                $("#right-frame").html(data);
             });
+        });
 
-            // 表格样式
-            $("tr").hover(function(){
-                $(this).css("background-color","yellow");
-            },function(){
-                 $(this).css("background-color","white");
-            });
+        // 表格样式
+        $("tr").hover(function(){
+            $(this).css("background-color","yellow");
+        },function(){
+             $(this).css("background-color","white");
+        });
      });
  </script>
  <style>
