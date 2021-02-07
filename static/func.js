@@ -7,7 +7,7 @@ $(document).ready(function(){
         $(this).css("background-color","yellow");
     });
     $("main").on("mouseleave","tr",function(){
-        $(this).css("background-color","white");
+        $(this).css("background-color","transparent");
     });
 
     // table 列表
@@ -20,12 +20,14 @@ $(document).ready(function(){
 
     // 弹出选项卡
     $("aside").on("mouseenter",".table-name",function(){
+        $(this).css("background-color","green");
         $("#table-option-pop").html(`
             <button type="submit" id="getTableBtn">查看表结构</button>
             <button type="submit" id="getTableRecordBtn">查看数据</button>
         `);
     });
     $("aside").on("mouseleave",".table-name",function(){
+        $(this).css("background-color","transparent");
         setTimeout(function () {
             $("#table-option-pop").html("");
         },4000);

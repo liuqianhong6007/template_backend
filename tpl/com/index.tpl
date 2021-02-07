@@ -10,7 +10,7 @@
 <body>
     <header>模板后台</header>
     <nav>
-        <span id="getTablesSpan">表查询</span>
+        <span id="getTablesSpan" class="funcItem">表查询</span>
     </nav>
     <aside></aside>
     <main></main>

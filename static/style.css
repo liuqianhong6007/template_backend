@@ -1,32 +1,35 @@
 body{
     margin: 0;
+    background-color: aliceblue;
 }
 header{
     background-color: black;
     color: white;
-    line-height: 40px;
+    font-size: 30px;
     text-align: center;
-    font-size: 40px;
+    padding: 10px;
 }
 nav{
-    background-color: black;
     color: red;
     height: 20px;
     text-align: left;
-    padding: 20px 0;
-    font-size: 20px;
+    padding: 5px 0;
+    font-size: 15px;
 }
 aside{
+    background-color: darkgray;
     color: black;
-    height: 750px;
+    height: 760px;
     width: 20%;
     float: left;
     font-size: 20px;
+    // 消除 float 带来的颜色覆盖
+    overflow: hidden;
 }
 main{
-    background-color: aliceblue;
     height: 750px;
     font-size: 20px;
+    padding: 5px;
 }
 footer{
     background-color: black;
@@ -38,4 +41,8 @@ footer{
 button{
     background-color: gainsboro;
     font-size: 18px;
+    border-radius: 5px;
+}
+.funcItem{
+    background-color: darkgray;
 }
