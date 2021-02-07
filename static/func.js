@@ -131,7 +131,3 @@ $(document).ready(function(){
         $(this).parent().parent().remove();
     })
 });
-
-function getTableColumn(table) {
-
-}
