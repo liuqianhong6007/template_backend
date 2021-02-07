@@ -44,17 +44,7 @@ func GetTables(c *gin.Context) {
 
 func GetTable(c *gin.Context) {
 	tableName := c.Query("tableName")
-	rows, err := gDb.QueryContext(c, GetTableSql, config.DbCfg().LibName, tableName)
-	checkValue(c, err)
-	defer rows.Close()
-
-	var columns []Column
-	for rows.Next() {
-		var column Column
-		err = rows.Scan(&column.ColumnName, &column.DataType, &column.ColumnType, &column.ColumnComment, &column.ColumnKey)
-		checkValue(c, err)
-		columns = append(columns, column)
-	}
+	columns := getTableMeta(c, tableName)
 	table := Table{
 		Name:    tableName,
 		Columns: columns,

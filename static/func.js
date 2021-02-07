@@ -2,6 +2,14 @@ var domain = "http://127.0.0.1:8081";
 
 // jquery 入口
 $(document).ready(function(){
+    // 表格样式
+    $("main").on("mouseenter","tr",function(){
+        $(this).css("background-color","yellow");
+    });
+    $("main").on("mouseleave","tr",function(){
+        $(this).css("background-color","white");
+    });
+
     // table 列表
     $("#getTablesSpan").click(function(){
         url = domain + "/getTables";
@@ -120,13 +128,6 @@ $(document).ready(function(){
     $("main").on("click","#cancelAddTableRecordBtn",function () {
         $(this).parent().parent().remove();
     })
-
-    // 表格样式
-    $("tr").hover(function(){
-        $(this).css("background-color","yellow");
-    },function(){
-        $(this).css("background-color","white");
-    });
 });
 
 function getTableColumn(table) {
