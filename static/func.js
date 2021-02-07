@@ -61,6 +61,26 @@ $(document).ready(function(){
         });
     });
 
+    // 删除表数据
+    $("main").on("click","#deleteTableRecordBtn",function () {
+        tableName = $(this).parent().parent().parent().parent().attr("id").trim();
+        url = domain+"/deleteTableRecord";
+
+        columns = $(this).parent().siblings();
+        var data = "";
+        for (i = 0;i < columns.length;i++){
+            data = data + $(columns[i]).attr("class").trim() + "=" + $(columns[i]).text() + ";"
+        }
+        data = data.substr(0,data.length-1);
+
+        $.post(url, {
+            "tableName": tableName,
+            "data": data,
+        },function(data,status){
+            $("main").html(data);
+        });
+    });
+
     // 表格样式
     $("tr").hover(function(){
         $(this).css("background-color","yellow");

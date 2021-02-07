@@ -36,5 +36,6 @@ footer{
     text-align: center;
 }
 button{
-    background-color: deepskyblue;
+    background-color: gainsboro;
+    font-size: 18px;
 }

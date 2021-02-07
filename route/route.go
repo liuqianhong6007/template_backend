@@ -39,6 +39,11 @@ func init() {
 			Path:    "/updateTableRecord",
 			Handler: UpdateTableRecord,
 		},
+		{
+			Method:  http.MethodPost,
+			Path:    "/deleteTableRecord",
+			Handler: DeleteTableRecord,
+		},
 	})
 }
 

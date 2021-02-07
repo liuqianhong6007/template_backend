@@ -17,7 +17,7 @@
          {{end}}
          <td>
             <button type="submit" id="updateTableRecordBtn">修改</button>
-            <button type="submit">删除</button>
+            <button type="submit" id="deleteTableRecordBtn">删除</button>
          </td>
     </tr>
     {{end}}

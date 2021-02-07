@@ -187,26 +187,76 @@ func UpdateTableRecord(c *gin.Context) {
 	var args []interface{}
 	for k, v := range paramMap {
 		sqlStr = sqlStr + fmt.Sprintf("%s = ?,", k)
-
-		switch columnMap[k] {
-		case "tinyint", "smallint", "mediumint", "int", "integer", "bigint", "decimal", "numeric":
-			val, err := strconv.Atoi(v)
-			checkValue(c, err, "column data type mismatch")
-			args = append(args, val)
-		case "float", "double":
-			val, err := strconv.ParseFloat(v, 64)
-			checkValue(c, err, "column data type mismatch")
-			args = append(args, val)
-		case "char", "varchar", "tinytext", "mediumtext", "longtext", "text", "tinyblob", "mediumblob", "longblob", "blob":
-			args = append(args, v)
-		default:
-			checkValue(c, errors.New("unknown data type"))
-		}
+		args = append(args, transform(c, columnMap, k, v))
 	}
 
 	sqlStr = sqlStr[:len(sqlStr)-1]
 	sqlStr = sqlStr + fmt.Sprintf(" where %s = ?", pk)
 	args = append(args, paramMap[pk])
+
+	_, err := gDb.ExecContext(c, sqlStr, args...)
+	checkValue(c, err)
+
+	getTableRecords(c, tableName)
+}
+
+func transform(c *gin.Context, columnMap map[string]string, k, v string) (val interface{}) {
+	var err error
+	switch columnMap[k] {
+	case "tinyint", "smallint", "mediumint", "int", "integer", "bigint", "decimal", "numeric":
+		val, err = strconv.Atoi(v)
+		checkValue(c, err, "column data type mismatch")
+
+	case "float", "double":
+		val, err = strconv.ParseFloat(v, 64)
+		checkValue(c, err, "column data type mismatch")
+
+	case "char", "varchar", "tinytext", "mediumtext", "longtext", "text", "tinyblob", "mediumblob", "longblob", "blob":
+		val = v
+	default:
+		checkValue(c, errors.New("unknown data type"))
+	}
+	return
+}
+
+func DeleteTableRecord(c *gin.Context) {
+	tableName := c.PostForm("tableName")
+	checkValue(c, tableName != "", "param[tableName] is null")
+
+	columns := getTableMeta(c, tableName)
+	checkValue(c, len(columns) > 0, fmt.Sprintf("table[%s] not exit", tableName))
+
+	columnMap := make(map[string]string)
+	var pk string
+	for _, column := range columns {
+		if column.ColumnKey == "PRI" { // primary key
+			pk = column.ColumnName
+		}
+		columnMap[column.ColumnName] = column.DataType
+	}
+	checkValue(c, pk != "", fmt.Sprintf("table[%s] has not pk yet", tableName))
+
+	data := c.PostForm("data")
+	checkValue(c, data != "", "data param is null")
+
+	paramMap := make(map[string]string)
+	for _, kv := range strings.Split(data, ";") {
+		arr := strings.Split(kv, "=")
+		if len(arr) != 2 {
+			continue
+		}
+		if _, ok := columnMap[arr[0]]; !ok {
+			continue
+		}
+		paramMap[arr[0]] = arr[1]
+	}
+	if _, ok := paramMap[pk]; !ok {
+		checkValue(c, errors.New("param must include pk"))
+	}
+
+	sqlStr := "delete from " + tableName + fmt.Sprintf(" where %s = ?", pk)
+	var args []interface{}
+	args = append(args, transform(c, columnMap, pk, paramMap[pk]))
 
 	_, err := gDb.ExecContext(c, sqlStr, args...)
 	checkValue(c, err)
