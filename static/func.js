@@ -116,6 +116,11 @@ $(document).ready(function(){
         });
     })
 
+    // 取消新增表数据
+    $("main").on("click","#cancelAddTableRecordBtn",function () {
+        $(this).parent().parent().remove();
+    })
+
     // 表格样式
     $("tr").hover(function(){
         $(this).css("background-color","yellow");
