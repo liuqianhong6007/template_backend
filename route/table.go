@@ -23,6 +23,7 @@ type Column struct {
 	ColumnType    string
 	ColumnComment string
 	ColumnKey     string
+	Extra         string
 }
 
 func GetTables(c *gin.Context) {
@@ -85,7 +86,7 @@ func getTableMeta(c *gin.Context, tableName string) (columns []Column) {
 
 	for rows.Next() {
 		var column Column
-		err = rows.Scan(&column.ColumnName, &column.DataType, &column.ColumnType, &column.ColumnComment, &column.ColumnKey)
+		err = rows.Scan(&column.ColumnName, &column.DataType, &column.ColumnType, &column.ColumnComment, &column.ColumnKey, &column.Extra)
 		checkValue(c, err)
 		columns = append(columns, column)
 	}
@@ -257,6 +258,63 @@ func DeleteTableRecord(c *gin.Context) {
 	sqlStr := "delete from " + tableName + fmt.Sprintf(" where %s = ?", pk)
 	var args []interface{}
 	args = append(args, transform(c, columnMap, pk, paramMap[pk]))
+
+	_, err := gDb.ExecContext(c, sqlStr, args...)
+	checkValue(c, err)
+
+	getTableRecords(c, tableName)
+}
+
+func AddTableRecord(c *gin.Context) {
+	tableName := c.PostForm("tableName")
+	checkValue(c, tableName != "", "param[tableName] is null")
+
+	columns := getTableMeta(c, tableName)
+	checkValue(c, len(columns) > 0, fmt.Sprintf("table[%s] not exit", tableName))
+
+	columnMap := make(map[string]string)
+	var pk string
+	for _, column := range columns {
+		if column.ColumnKey == "PRI" { // primary key
+			pk = column.ColumnName
+		}
+		if strings.Contains(column.Extra, "auto_increment") { // 自增字段
+			continue
+		}
+		columnMap[column.ColumnName] = column.DataType
+	}
+	checkValue(c, pk != "", fmt.Sprintf("table[%s] has not pk yet", tableName))
+
+	data := c.PostForm("data")
+	checkValue(c, data != "", "data param is null")
+
+	paramMap := make(map[string]string)
+	var paramCnt int
+	for _, kv := range strings.Split(data, ";") {
+		arr := strings.Split(kv, "=")
+		if len(arr) != 2 {
+			continue
+		}
+		if _, ok := columnMap[arr[0]]; !ok {
+			continue
+		}
+		paramMap[arr[0]] = arr[1]
+		paramCnt++
+	}
+	if paramCnt < 1 {
+		checkValue(c, errors.New("param must include at least one column to add"))
+	}
+	var columnNameList []string
+	var args []interface{}
+	var argPlace string
+	for k, _ := range columnMap {
+		columnNameList = append(columnNameList, k)
+		args = append(args, transform(c, columnMap, k, paramMap[k]))
+		argPlace += "?,"
+	}
+	argPlace = argPlace[:len(argPlace)-1]
+
+	sqlStr := "insert into " + tableName + fmt.Sprintf("(%s)values(%s)", strings.Join(columnNameList, ","), argPlace)
 
 	_, err := gDb.ExecContext(c, sqlStr, args...)
 	checkValue(c, err)

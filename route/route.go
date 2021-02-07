@@ -44,6 +44,11 @@ func init() {
 			Path:    "/deleteTableRecord",
 			Handler: DeleteTableRecord,
 		},
+		{
+			Method:  http.MethodPost,
+			Path:    "/addTableRecord",
+			Handler: AddTableRecord,
+		},
 	})
 }
 
@@ -100,7 +105,7 @@ func InitDatabase() {
 
 var (
 	GetTablesStmt *sql.Stmt
-	GetTableSql   = `select COLUMN_NAME,DATA_TYPE,COLUMN_TYPE,COLUMN_COMMENT,COLUMN_KEY from information_schema.COLUMNS where TABLE_SCHEMA = ? AND TABLE_NAME = ?`
+	GetTableSql   = `select COLUMN_NAME,DATA_TYPE,COLUMN_TYPE,COLUMN_COMMENT,COLUMN_KEY,EXTRA from information_schema.COLUMNS where TABLE_SCHEMA = ? AND TABLE_NAME = ?`
 )
 
 func prepareStmt(db *sql.DB) {

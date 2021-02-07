@@ -9,11 +9,7 @@
     {{range .Records}}
     <tr>
          {{range .RecordColumns}}
-            {{if .Editable}}
-                <td class="{{.ColumnName}}" contentEditable="true">{{.Val}}</td>
-            {{else}}
-                <td class="{{.ColumnName}}">{{.Val}}</td>
-            {{end}}
+         <td class="{{.ColumnName}}" contentEditable="{{.Editable}}">{{.Val}}</td>
          {{end}}
          <td>
             <button type="submit" id="updateTableRecordBtn">修改</button>
@@ -21,9 +17,5 @@
          </td>
     </tr>
     {{end}}
-    <tr>
-        <td>
-            <button type="submit">新增</button>
-        </td>
-    </tr>
 </table>
+<button type="submit" id="addTableRecordBtn">新增</button>

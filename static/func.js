@@ -81,6 +81,41 @@ $(document).ready(function(){
         });
     });
 
+    // 新增表数据
+    $("main").on("click","#addTableRecordBtn",function () {
+        columns = $(this).parent().find("table tr th")
+        var data = "<tr>";
+        for (i = 0;i < columns.length - 1;i++){
+            data = data + `<td class=` + $(columns[i]).text().trim() + ` contentEditable="true"> </td>>`
+        }
+        data += `<td>
+                    <button type="submit" id="submitAddTableRecordBtn">提交</button>
+                    <button type="submit" id="cancelAddTableRecordBtn">取消</button>
+                 </td>`
+        data += `</tr>`;
+        $(this).parent().find("table").append(data)
+    });
+
+    // 提交新增表数据
+    $("main").on("click","#submitAddTableRecordBtn",function () {
+        tableName = $(this).parent().parent().parent().parent().attr("id").trim();
+        url = domain+"/addTableRecord";
+
+        columns = $(this).parent().siblings();
+        var data = "";
+        for (i = 0;i < columns.length;i++){
+            data = data + $(columns[i]).attr("class").trim() + "=" + $(columns[i]).text() + ";"
+        }
+        data = data.substr(0,data.length-1);
+
+        $.post(url, {
+            "tableName": tableName,
+            "data": data,
+        },function(data,status){
+            $("main").html(data);
+        });
+    })
+
     // 表格样式
     $("tr").hover(function(){
         $(this).css("background-color","yellow");
