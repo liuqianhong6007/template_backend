@@ -69,7 +69,13 @@ type TableRecord struct {
 }
 
 type Record struct {
-	Values []string
+	RecordColumns []RecordVal
+}
+
+type RecordVal struct {
+	Editable   bool
+	ColumnName string
+	Val        string
 }
 
 func getTableMeta(c *gin.Context, tableName string) (columns []Column) {
@@ -86,8 +92,7 @@ func getTableMeta(c *gin.Context, tableName string) (columns []Column) {
 	return
 }
 
-func GetTableRecords(c *gin.Context) {
-	tableName := c.Query("tableName")
+func getTableRecords(c *gin.Context, tableName string) {
 	columns := getTableMeta(c, tableName)
 
 	var tableRecord TableRecord
@@ -116,14 +121,27 @@ func GetTableRecords(c *gin.Context) {
 		err = rowRecords.Scan(columnVals...)
 		checkValue(c, err)
 		var record Record
-		for _, realColumnVal := range realColumnVals {
-			record.Values = append(record.Values, string(realColumnVal))
+		var recordVal RecordVal
+		for i, realColumnVal := range realColumnVals {
+			recordVal = RecordVal{
+				ColumnName: columns[i].ColumnName,
+				Val:        string(realColumnVal),
+			}
+			if columns[i].ColumnKey != "PRI" {
+				recordVal.Editable = true
+			}
+			record.RecordColumns = append(record.RecordColumns, recordVal)
 		}
 		tableRecord.Records = append(tableRecord.Records, record)
 	}
 	tableRecord.TableName = tableName
 
 	c.HTML(http.StatusOK, "getTableRecords.tpl", tableRecord)
+}
+
+func GetTableRecords(c *gin.Context) {
+	tableName := c.Query("tableName")
+	getTableRecords(c, tableName)
 }
 
 func UpdateTableRecord(c *gin.Context) {
@@ -193,5 +211,5 @@ func UpdateTableRecord(c *gin.Context) {
 	_, err := gDb.ExecContext(c, sqlStr, args...)
 	checkValue(c, err)
 
-	GetTableRecords(c)
+	getTableRecords(c, tableName)
 }

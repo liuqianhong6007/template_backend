@@ -8,8 +8,12 @@
 
     {{range .Records}}
     <tr>
-         {{range .Values}}
-         <td>{{.}}</td>
+         {{range .RecordColumns}}
+            {{if .Editable}}
+                <td class="{{.ColumnName}}" contentEditable="true">{{.Val}}</td>
+            {{else}}
+                <td class="{{.ColumnName}}">{{.Val}}</td>
+            {{end}}
          {{end}}
          <td>
             <button type="submit" id="updateTableRecordBtn">修改</button>

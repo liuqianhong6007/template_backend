@@ -17,36 +17,48 @@ $(document).ready(function(){
             <button type="submit" id="getTableRecordBtn">查看数据</button>
         `);
     });
+    $("aside").on("mouseleave",".table-name",function(){
+        setTimeout(function () {
+            $("#table-option-pop").html("");
+        },4000);
+    });
 
     // 查看表结构
-    $("#getTableBtn").click(function(){
-        tableName = $(this).parent().find(".tableName").text();
+    $("aside").on("click","#getTableBtn",function () {
+        tableName = $(this).parent().parent().find(".table-name").text().trim();
         url = domain+"/getTable?tableName=" + tableName;
         $.get(url,function(data,status){
-            $("#right-frame").html(data);
+            $("main").html(data);
         });
     });
 
     // 查看表数据
-    $("#getTableRecordBtn").click(function(){
-        tableName = $(this).parent().find(".tableName").text();
+    $("aside").on("click","#getTableRecordBtn",function () {
+        tableName = $(this).parent().parent().find(".table-name").text().trim();
         url = domain+"/getTableRecords?tableName=" + tableName
         $.get(url,function(data,status){
-            $("#right-frame").html(data);
+            $("main").html(data);
         });
     });
 
     // 更新表数据
-    $("#updateTableRecordBtn").click(function(){
-        tableName = $(this).parent().parent().parent().attr("id");
+    $("main").on("click","#updateTableRecordBtn",function () {
+        tableName = $(this).parent().parent().parent().parent().attr("id").trim();
         url = domain+"/updateTableRecord";
-        $.post(url,
-            {
-                "tableName": tableName,
-                "data": data,
-            },function(data,status){
-                $("#right-frame").html(data);
-            });
+
+        columns = $(this).parent().siblings();
+        var data = "";
+        for (i = 0;i < columns.length;i++){
+            data = data + $(columns[i]).attr("class").trim() + "=" + $(columns[i]).text() + ";"
+        }
+        data = data.substr(0,data.length-1);
+
+        $.post(url, {
+            "tableName": tableName,
+            "data": data,
+        },function(data,status){
+            $("main").html(data);
+        });
     });
 
     // 表格样式
@@ -56,3 +68,7 @@ $(document).ready(function(){
         $(this).css("background-color","white");
     });
 });
+
+function getTableColumn(table) {
+
+}
