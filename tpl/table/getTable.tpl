@@ -1,9 +1,9 @@
 <table border="1">
     <tr>
-        <th>字段名称</th>
-        <th>字段类型</th>
-        <th>数据类型</th>
-        <th>描述</th>
+        <th>field_name</th>
+        <th>data_type</th>
+        <th>field_type</th>
+        <th>desc</th>
     </tr>
 
     {{range .Columns}}

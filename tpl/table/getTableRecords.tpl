@@ -3,7 +3,7 @@
     {{range .Columns}}
         <th>{{.}}</th>
     {{end}}
-    <th>操作</th>
+    <th>operation</th>
     </tr>
 
     {{range .Records}}
